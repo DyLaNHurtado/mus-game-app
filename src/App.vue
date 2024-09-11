@@ -1,11 +1,9 @@
 <template>
-  <v-app>
-    <v-main>
+<div id="app">
       <router-view />
       <ErrorModal v-if="showError" :message="errorMessage" @close="closeErrorModal" />
       <QuestionModal v-if="showQuestion" :question="question" @confirm="handleConfirm" @cancel="handleCancel" />
-    </v-main>
-  </v-app>
+</div>
 </template>
 
 <script>
