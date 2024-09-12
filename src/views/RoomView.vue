@@ -19,7 +19,7 @@
     </section>
     <section v-if="roomCode" class="w-full max-w-md space-y-4">
       <div class="w-full space-y-4">
-        <button v-if="isCreator" class="btn-primary w-full" @click="startGame" :disabled="!isAllPlayer">
+        <button v-if="myPlayer?.isLeader" class="btn-primary w-full" @click="startGame" :disabled="!isAllPlayer">
           <span v-if="isAllPlayer" class="flex items-center justify-center">
             <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 18V6l8 6-8 6z" />
@@ -37,12 +37,12 @@
           <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
-          &nbsp; Salir {{ isCreator ? 'y borrar sala' : 'de la sala' }}
+          &nbsp; Salir {{ myPlayer?.isLeader ? 'y borrar sala' : 'de la sala' }}
         </button>
       </div>
     </section>
 
-    <PreviewPlayerDialog v-if="isPreviewVisible" :isVisible="isPreviewVisible" :player="selectedPlayer" @close="closePreview" @remove="removePlayer" @add-bot="addBotToSelectedIndex" />
+    <PreviewPlayerDialog v-if="isPreviewVisible"  :isVisible="isPreviewVisible" :player="selectedPlayer" @close="closePreview" @remove="removePlayer" @add-bot="addBotToSelectedIndex" @move-here="movePlayer" />
   </div>
 </template>
 
@@ -64,9 +64,9 @@ export default {
       room: null,
       selectedPlayer: null,
       players: [null, null, null, null],
+      myPlayer: null,
       selectedPlayerIndex: null,
       copied: false,
-      isCreator: false,
     };
   },
   computed: {
@@ -78,13 +78,33 @@ export default {
     },
     isAllPlayer() {
       return this.players.every(player => player !== null);
+    },
+    getIndex(player) {
+      return this.players.indexOf(player);
     }
   },
   methods: {
+    getMyPlayer(){
+      //Obtener mi player para las acciones posteriores de moverse y demás
+      //La mejor idea para guardar mi jugador es usar vuex para almacenarlo
+      // this.myPlayer = this.$store.state.player;ç
+      // Aquí podrías usar una llamada a la API para obtener el jugador actual
+      // y almacenarlo en vuex para que se pueda usar en cualquier parte de tu app
+      // Por ejemplo:
+      // this.$store.commit('SET_MY_PLAYER', response.data);
+      //De momento lo dejo como el primer index de prueba, esto es temporal y se debe implementar lo primero
+      this.myPlayer =  this.players[0];
+    },
+    getRoomPlayers(){
+      //LLamada a la API sobre los jugadores de esta sala aqui
+      //De momento lo simulo se debe implementar
+      this.players[0] = { name: "Tú", photo: "/path/to/avatar1.jpg", isLeader: true};
+
+    },
     createRoom() {
+      this.getRoomPlayers();
+      this.getMyPlayer();
       this.roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-      this.players[0] = { name: "Tú", photo: "/path/to/avatar1.jpg" };
-      this.isCreator = true;
     },
     startGame() {
       if (this.isAllPlayer) {
@@ -109,8 +129,8 @@ export default {
       }
     },
     leaveRoom() {
-      if (this.isCreator) {
-        // Lógica para eliminar la sala si es el creador
+      if (this.myPlayer.isLeader) {
+        // Lógica para eliminar la sala si es el creador con llamada a la API aqui
       }
       this.$router.push({ name: "Home" });
     },
@@ -149,6 +169,16 @@ export default {
         this.players[index] = null;
         this.isPreviewVisible = false;
       }
+    },
+    movePlayer() {
+      const lastMyPlayerIndex = this.players.indexOf(this.myPlayer);
+      if (this.selectedPlayerIndex !== -1 || lastMyPlayerIndex !== -1) {
+        this.players[lastMyPlayerIndex] = null;
+        this.players[this.selectedPlayerIndex] = this.myPlayer;
+        this.isPreviewVisible = false;
+      }else{
+        eventBus.showErrorModal("No te puedes mover, posicion no encontrada.");
+      }
     }
   },
   components: {
@@ -159,6 +189,7 @@ export default {
   },
   mounted() {
     this.createRoom();
+    this.getMyPlayer();
   },
 };
 </script>
@@ -190,7 +221,7 @@ export default {
 
 /* Estilo minimalista para botones */
 .btn-primary {
-  background-color: #3182ce;
+  background-color: #d97706;
   color: #fff;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;

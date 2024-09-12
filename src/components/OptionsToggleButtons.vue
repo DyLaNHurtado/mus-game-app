@@ -26,9 +26,9 @@ export default {
 
 <style scoped>
 .toggle-button {
-  @apply bg-gray-800 hover:bg-gray-600 text-gray-400 w-16 h-16 py-2 px-4 rounded-lg transition duration-300;
+  @apply bg-gray-700 hover:bg-gray-500 w-16 h-16 py-2 px-4 rounded-lg  duration-300  text-amber-100;
 }
 .toggle-button.active {
-  @apply bg-blue-500 text-white font-bold;
+  @apply bg-gradient-to-r font-bold  from-amber-600 to-amber-700 text-gray-100 transition-colors shadow-md;
 }
 </style>
