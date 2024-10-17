@@ -2,13 +2,12 @@
 
 ¡Bienvenidos a la **App de Mus**! Un proyecto que lleva la experiencia tradicional del Mus al mundo digital. Ya sea jugando con amigos o compitiendo con rivales online, nuestro objetivo es ofrecer una experiencia entretenida, personalizable y en constante evolución.
 
-## 🚀 Estado actual del proyecto
+## 🚀 Plan actual del proyecto
 
 ### 🎮 Funcionalidades principales
 - **Partidas multijugador**: Juega Mus online con jugadores de todo el mundo.
 - **Mesas privadas**: Crea partidas privadas para disfrutar con tus amigos.
 - **Interfaz amigable**: Diseño simple y claro, con reglas del Mus basadas en la versión más popular.
-- **Chat en vivo**: Comunícate con otros jugadores durante las partidas.
 
 ### 💻 Tecnologías utilizadas
 - **Frontend**: Vue.js y TailwindCSS para una interfaz moderna, responsiva y adaptable.
@@ -40,7 +39,11 @@
 
 ### 📱 Optimización móvil
 - **Diseño completamente responsive**: Juega desde cualquier dispositivo con una interfaz adaptada tanto a escritorio como a móvil.
-- **Versión Webview**: Preparación para lanzarse como aplicación nativa en Android e iOS mediante Webview.
+- **Versión mobile**: Preparación para lanzarse como aplicación hibrida en Android e iOS mediante Webview o mediante un framework multiplataforma simulando ser una app nativa que ofrezca lo mismo pero siendo web como Ionic, Cordova, etc.
+
+Que sea accesible desde el móvil deberá ser una prioridad, importante recalcar que el desarrollo una app web no es usable para el desarrollo de una aplicación nativa en móvil. En otras palabras habria que rehacerlo todo. Para lograr que ambos productos tanto app web como la aplicacion para moviles compartan el codigo puedes hacer una aplicación multiplataforma o meter la aplicación web en un WebView.
+
+Con el tiempo, cuando sea la version web app este estable, y por tiempo se pueda empezar un segundo proyecto de desarrollo, podriamos hacer aplicaciones nativas tomando de referencia la de web para Android e iOS y asi dar una mejor experiencia al usuario. Pero no es la prioridad por el momento.
 
 ## 🎨 Monetización sin Pay to Win
 
