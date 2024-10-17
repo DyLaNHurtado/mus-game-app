@@ -2,22 +2,22 @@
 Habrá personajes para cuando juegues en solitario con la maquina/IA o en multijugador con personajes controlado por la maquina/IA. Seran todos seleccionables y diferentes para darle mas color y frescura al juego que no se sienta siempre lo mismo.
 
 Cualquiera puede añadir, modificar o quitar por el bien común. En resumen proponer nuevas ideas... Antes de aprobarse la propuesta se comunicará atraves de crear una issue o directamente debatiendo en el cambio de la pull request
-----
 
-Cada personaje constará un titulo, una descripción y está equipado con las siguientes habilidades:
 
-    ## 🌟Habilidades
-    
 
-    * Atrevido 😎: Capacidad para tomar riesgos en momentos críticos.
-    * Faroleo 📸: Habilidad para engañar y hacer creer a otros que tiene mejores cartas de las que realmente tiene.
-    * Caza Señas 🧐: Destreza para captar las señas y estrategias de otros jugadores.
-    * Corta Mus ✂️: Talento para interrumpir el juego en el momento adecuado, cortando el Mus.
-    * Descartes 🧹: Capacidad para desechar cartas con precisión, asegurando mejores manos.
-    * Interactividad 💻: Influencia sobre el ritmo del juego, señas y las decisiones de otros jugadores.
+
+Cada personaje constará un titulo, una descripción y está equipado con las siguientes habilidades:    
+## 🌟Habilidades:    
+
+* Atrevido 😎: Capacidad para tomar riesgos en momentos críticos.
+* Faroleo 📸: Habilidad para engañar y hacer creer a otros que tiene mejores cartas de las que realmente tiene.
+* Caza Señas 🧐: Destreza para captar las señas y estrategias de otros jugadores.
+* Corta Mus ✂️: Talento para interrumpir el juego en el momento adecuado, cortando el Mus.
+* Descartes 🧹: Capacidad para desechar cartas con precisión, asegurando mejores manos.
+* Interactividad 💻: Influencia sobre el ritmo del juego, señas y las decisiones de otros jugadores.
 
 Todos los personajes tienen estas habilidades distribuidas en distintos niveles, del 1 al 5, lo que asegura que estén equilibrados con fortalezas y debilidades claras. Vamos a detallar los personajes:
-----
+
 
 ### 1. **El Viejo Sabio 
 
