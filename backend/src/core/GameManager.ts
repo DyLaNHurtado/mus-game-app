@@ -48,7 +48,7 @@ export class GameManager {
       throw new Error("La room está llena");
     }
 
-    // Verificar si ya hay una partida en curso
+    // Verificar si ya hay una room en curso
     if (room.gameState && !room.gameState.isGameFinished) {
       // Intentar reconectar jugador existente
       const existingPlayer = room.players.find((p) => p.name === playerName);
@@ -58,7 +58,7 @@ export class GameManager {
         logger.info(`Jugador reconectado: ${playerName}`);
         return { room, player: existingPlayer };
       } else {
-        throw new Error("La partida ya ha comenzado");
+        throw new Error("La room ya ha comenzado");
       }
     }
 
@@ -106,18 +106,18 @@ export class GameManager {
 
     const player = room.players[playerIndex];
 
-    // Si hay partida en curso, marcar como desconectado en lugar de eliminar
+    // Si hay room en curso, marcar como desconectado en lugar de eliminar
     if (room.gameState && !room.gameState.isGameFinished) {
       player.disconnect();
-      logger.info(`Jugador ${player.name} se desconectó durante la partida en la room ${roomId}`);
+      logger.info(`Jugador ${player.name} se desconectó durante la room en la room ${roomId}`);
     } else {
-      // Eliminar jugador si no hay partida
+      // Eliminar jugador si no hay room
       room.players.splice(playerIndex, 1);
       this.playerToRoom.delete(playerId);
       logger.info(`Jugador ${player.name} salió de la room ${roomId}`);
     }
 
-    // Eliminar room si está vacía y no hay partida
+    // Eliminar room si está vacía y no hay room
     if (room.players.length === 0 || room.players.every((p) => !p.isConnected)) {
       this.deleteRoom(roomId);
     }
@@ -125,7 +125,7 @@ export class GameManager {
     return { room, player };
   }
 
-  // Iniciar partida
+  // Iniciar room
   startGame(roomId: string): Game {
     const room = this.getRoom(roomId);
     if (!room) {
@@ -137,22 +137,22 @@ export class GameManager {
     }
 
     if (room.gameState && !room.gameState.isGameFinished) {
-      throw new Error("Ya hay una partida en curso");
+      throw new Error("Ya hay una room en curso");
     }
 
-    // Crear nueva partida
+    // Crear nueva room
     const game = new Game(roomId, room.players);
     this.games.set(roomId, game);
 
     // Actualizar estado de la room
     room.gameState = game.getGameState();
 
-    logger.info(`Partida iniciada con 4 jugadores en la room ${roomId}`);
+    logger.info(`room iniciada con 4 jugadores en la room ${roomId}`);
 
     return game;
   }
 
-  // Obtener partida
+  // Obtener room
   getGame(roomId: string): Game | undefined {
     return this.games.get(roomId);
   }
@@ -166,7 +166,7 @@ export class GameManager {
         this.playerToRoom.delete(player.id);
       });
 
-      // Eliminar partida si existe
+      // Eliminar room si existe
       this.games.delete(roomId);
 
       // Eliminar room

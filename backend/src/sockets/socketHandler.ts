@@ -107,7 +107,7 @@ export class SocketHandler {
             // Notificar a otros jugadores
             socket.to(room.id).emit(SocketEvents.PLAYER_JOINED, player.getPublicInfo());
 
-            // Si hay una partida en curso, enviar estado actual
+            // Si hay una room en curso, enviar estado actual
             if (room.gameState && !room.gameState.isGameFinished) {
                 const game = this.gameManager.getGame(room.id);
                 if (game) {
@@ -165,7 +165,7 @@ export class SocketHandler {
             const game = this.gameManager.startGame(roomId);
             const gameState = game.getPublicGameState();
 
-            // Notificar a todos los jugadores que empezó la partida
+            // Notificar a todos los jugadores que empezó la room
             this.io.to(roomId).emit(SocketEvents.GAME_STARTED, gameState);
 
             // Enviar mano privada a cada jugador
@@ -179,7 +179,7 @@ export class SocketHandler {
                 });
             }
 
-            logger.info(`Partida iniciada en ROOM${roomId}`);
+            logger.info(`room iniciada en ROOM${roomId}`);
         } catch (error) {
             logger.error(` handleStartGame: ${JSON.stringify(socket.data)}`);
             socket.emit(SocketEvents.ERROR, this.getErrorMessage(error));
@@ -336,7 +336,7 @@ export class SocketHandler {
         // Notificar a otros jugadores
         socket.to(validatedData.roomId).emit(SocketEvents.PLAYER_RECONNECTED, validatedData.playerId)
 
-        logger.info(`Jugador ${data.playerId} reconectado en la sala ${data.roomId}`,)
+        logger.info(`Jugador ${data.playerId} reconectado en la room ${data.roomId}`,)
         } catch (error) {
         logger.error(`handleReconnect ${JSON.stringify(data)}`);
         socket.emit(SocketEvents.ERROR, this.getErrorMessage(error))

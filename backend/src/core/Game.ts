@@ -44,7 +44,7 @@ export class Game {
     // Repartir cartas iniciales
     this.dealInitialCards()
 
-    logger.info(`Nueva partida creada - Mano ${this.gameState.currentHand} en sala ${roomId}`);
+    logger.info(`Nueva room creada - Mano ${this.gameState.currentHand} en room ${roomId}`);
   }
 
   // Repartir cartas iniciales
@@ -54,7 +54,7 @@ export class Game {
       player.setHand(hand)
     })
 
-    logger.info(`Cartas repartidas a todos los jugadores ${this.gameState.players.map(p => p.name +" " +JSON.stringify(p.hand) ).join(", ")}`);
+    logger.info(`Cartas rerooms a todos los jugadores ${this.gameState.players.map(p => p.name +" " +JSON.stringify(p.hand) ).join(", ")}`);
   }
 
   // Crear datos vacíos de fase
@@ -165,7 +165,7 @@ export class Game {
       this.gameState.isGameFinished = true
       this.gameState.winner = team
       logger.info(
-        `¡Partida terminada! Ganó el equipo ${team} con ${this.gameState.scores[team]} puntos en la room ${this.gameState.id}`
+        `¡room terminada! Ganó el equipo ${team} con ${this.gameState.scores[team]} puntos en la room ${this.gameState.id}`
       )
     }
   }
@@ -173,7 +173,7 @@ export class Game {
   // Iniciar nueva mano
   startNewHand(): void {
     if (this.gameState.isGameFinished) {
-      throw new Error("La partida ya ha terminado")
+      throw new Error("La room ya ha terminado")
     }
 
     this.gameState.currentHand++

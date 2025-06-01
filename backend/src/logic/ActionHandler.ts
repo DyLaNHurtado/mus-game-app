@@ -215,7 +215,7 @@ export class ActionHandler {
 
     let points = gameState.phaseData.phasePoints
     if (gameState.phaseData.hasOrdago) {
-      // Órdago = toda la partida
+      // Órdago = toda la room
       points = 40
     }
 

@@ -6,7 +6,7 @@ import { logger } from "./logger"
 
 export class TestUtils {
   /**
-   * Crea una partida de prueba con 4 jugadores
+   * Crea una room de prueba con 4 jugadores
    */
   static createTestGame(): { gameManager: GameManager; game: Game; players: Player[] } {
     const gameManager = new GameManager()
@@ -22,7 +22,7 @@ export class TestUtils {
       players.push(player)
     })
 
-    // La partida se inicia automáticamente al tener 4 jugadores
+    // La room se inicia automáticamente al tener 4 jugadores
     const game = gameManager.getGame(room.id)!
 
     return { gameManager, game, players }
@@ -42,7 +42,7 @@ export class TestUtils {
   }
 
   /**
-   * Simula una partida completa automática
+   * Simula una room completa automática
    */
   static async simulateGame(gameManager: GameManager, gameId: string): Promise<void> {
     const game = gameManager.getGame(gameId)
@@ -50,7 +50,7 @@ export class TestUtils {
       throw new Error("Juego no encontrado")
     }
 
-    logger.info(`🎮 Iniciando simulación de partida ${gameId}`)
+    logger.info(`🎮 Iniciando simulación de room ${gameId}`)
 
     let handCount = 0
     const maxHands = 10 // Límite de seguridad
@@ -64,7 +64,7 @@ export class TestUtils {
       if (game.isGameFinished()) {
         const winner = game.getWinner()
         const scores = game.getGameState().scores
-        logger.info(`🏆 Partida terminada! Ganó el equipo ${winner} con ${scores[winner || 0]} puntos`)
+        logger.info(`🏆 room terminada! Ganó el equipo ${winner} con ${scores[winner || 0]} puntos`)
         break
       }
     }
@@ -190,13 +190,13 @@ export class TestUtils {
   }
 
   /**
-   * Muestra estadísticas de una partida
+   * Muestra estadísticas de una room
    */
   static logGameStats(game: Game): void {
     const gameState = game.getGameState()
     const teamInfo = game.getTeamInfo()
 
-    logger.info("=== ESTADÍSTICAS DE PARTIDA ===")
+    logger.info("=== ESTADÍSTICAS DE room ===")
     logger.info(`ID: ${gameState.id}`)
     logger.info(`Mano actual: ${gameState.currentHand}`)
     logger.info(`Fase actual: ${gameState.currentPhase}`)
@@ -226,9 +226,9 @@ export class TestUtils {
     logger.info("🧪 Ejecutando tests básicos...")
 
     try {
-      // Test 1: Crear partida
+      // Test 1: Crear room
       const { gameManager, game, players } = this.createTestGame()
-      logger.info("✅ Test 1: Creación de partida - PASÓ")
+      logger.info("✅ Test 1: Creación de room - PASÓ")
 
       // Test 2: Verificar manos
       players.forEach((player) => {
@@ -256,7 +256,7 @@ export class TestUtils {
 
       logger.info("🎉 Todos los tests básicos pasaron!")
     } catch (error) {
-      logger.error("❌ Test falló:", error)
+      logger.error(`❌ Test falló: ${error}` )
     }
   }
 }

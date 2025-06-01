@@ -1,5 +1,6 @@
 import type { Game } from "@/core/Game"
 import { logger } from "./logger"
+import { GamePhase } from "@/types/GameTypes"
 
 export class GameFlowManager {
   /**
@@ -25,18 +26,18 @@ export class GameFlowManager {
   private static processCountingPhase(game: Game): void {
     const gameState = game.getGameState()
 
-    logger.game(`Contando puntos de la mano ${gameState.currentHand}`, gameState.id)
+    logger.info(`Contando puntos de la mano ${gameState.currentHand} en la room ${gameState.id}`)
 
     // Verificar si alguien ganó
     if (gameState.isGameFinished) {
-      game.changePhase("finished")
+      game.changePhase(GamePhase.FINISHED)
       return
     }
 
     // Iniciar nueva mano
     setTimeout(() => {
+      logger.info(`Nueva mano iniciada automáticamente en la room ${gameState.id}, mano ${gameState.currentHand + 1}`)
       game.startNewHand()
-      logger.game(`Nueva mano iniciada automáticamente`, gameState.id)
     }, 3000) // Pausa de 3 segundos entre manos
   }
 
@@ -48,7 +49,7 @@ export class GameFlowManager {
     const winner = gameState.winner
     const scores = gameState.scores
 
-    logger.game(`🎉 Partida terminada! Ganó el equipo ${winner} con ${scores[winner || 0]} puntos`, gameState.id)
+    logger.info(`🎉 room terminada! Ganó el equipo ${winner} con ${scores[winner || 0]} puntos en la room ${gameState.id}`)
   }
 
   /**
@@ -96,7 +97,7 @@ export class GameFlowManager {
   }
 
   /**
-   * Obtiene estadísticas de la partida
+   * Obtiene estadísticas de la room
    */
   static getGameStats(game: Game) {
     const gameState = game.getGameState()

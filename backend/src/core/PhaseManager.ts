@@ -105,7 +105,7 @@ export class PhaseManager {
       [GamePhase.JUEGO]: "Juego",
       [GamePhase.PUNTO]: "Punto",
       [GamePhase.COUNTING]: "Contando puntos",
-      [GamePhase.FINISHED]: "Partida terminada",
+      [GamePhase.FINISHED]: "room terminada",
     };
 
     return names[phase] || phase;

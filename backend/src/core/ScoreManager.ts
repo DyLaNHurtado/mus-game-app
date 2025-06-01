@@ -75,7 +75,7 @@ export class ScoreManager {
     return this.scoreHistory.slice(-count);
   }
 
-  // Resetear puntuaciones (para nueva partida)
+  // Resetear puntuaciones (para nueva room)
   reset(): void {
     this.scores = [0, 0];
     this.scoreHistory = [];

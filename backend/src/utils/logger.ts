@@ -17,9 +17,11 @@ class Logger extends EventEmitter {
       fs.writeFileSync(this.logFilePath, "");
     }
   }
-
+  /**
+   * Formatea la fecha y hora actual en el formato dd/MM/yyyy, HH:MM:SS
+   * @returns {string} Fecha formateada
+   */
   private formatTimestamp(): string {
-    /* Fecha en formato dd/MM/yyyy, HH:MM:SS */
     const now = new Date();
     const day = String(now.getDate()).padStart(2, "0");
     const month = String(now.getMonth() + 1).padStart(2, "0");

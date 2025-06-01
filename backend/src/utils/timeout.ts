@@ -21,14 +21,14 @@ export class TimeoutManager {
     this.cancelTimeout(timeoutId)
 
     const timeout = setTimeout(() => {
-      logger.warn(`Timeout para jugador ${playerId} en partida ${gameId}`)
+      logger.warn(`Timeout para jugador ${playerId} en room ${gameId}`)
       config.onTimeout()
       this.timeouts.delete(timeoutId)
     }, config.duration)
 
     this.timeouts.set(timeoutId, timeout)
 
-    logger.debug(`Timeout establecido para ${playerId} (${config.duration}ms)`, gameId)
+    logger.debug(`Timeout establecido para ${playerId} (${config.duration}ms) en room ${gameId}`)
   }
 
   /**
@@ -43,7 +43,7 @@ export class TimeoutManager {
   }
 
   /**
-   * Cancela todos los timeouts de una partida
+   * Cancela todos los timeouts de una room
    */
   cancelGameTimeouts(gameId: string): void {
     const gameTimeouts = Array.from(this.timeouts.keys()).filter((id) => id.startsWith(gameId))
@@ -65,11 +65,11 @@ export class TimeoutManager {
     this.setPlayerTimeout(gameState.id, currentPlayer.id, {
       duration: GAME_CONFIG.TURN_TIMEOUT,
       onTimeout: () => {
-        logger.game(`Jugador ${currentPlayer.name} perdió su turno por timeout`, gameState.id)
+        logger.info(`Jugador ${currentPlayer.name} perdió su turno por timeout en room ${gameState.id}`)
         onPlayerTimeout(currentPlayer.id)
       },
       onCancel: () => {
-        logger.debug(`Timeout cancelado para ${currentPlayer.name}`, gameState.id)
+        logger.debug(`Timeout cancelado para ${currentPlayer.name} en room ${gameState.id}`)
       },
     })
   }
@@ -106,11 +106,11 @@ export class TimeoutManager {
     this.setPlayerTimeout(gameId, `reconnect-${playerId}`, {
       duration: GAME_CONFIG.RECONNECT_TIMEOUT,
       onTimeout: () => {
-        logger.warn(`Timeout de reconexión para jugador ${playerId} en partida ${gameId}`)
+        logger.warn(`Timeout de reconexión para jugador ${playerId} en room ${gameId}`)
         onReconnectionTimeout()
       },
       onCancel: () => {
-        logger.debug(`Timeout de reconexión cancelado para ${playerId}`, gameId)
+        logger.debug(`Timeout de reconexión cancelado para ${playerId} en room ${gameId}`)
       },
     })
   }

@@ -5,6 +5,15 @@ import { logger } from "@/utils/logger";
 export function setupRoutes(gameManager: GameManager) {
   const router = Router();
 
+  router.get("/", (_req, res) => {
+    res.json({ message: "Bienvenido al servidor de Mus" });
+  });
+
+  router.get("/version", (_req, res) => {
+    res.json({ version: process.env.VERSION || "1.0.0" });
+  });
+
+
   router.get("/health", (_req, res) => {
     res.json({
       status: "ok",
