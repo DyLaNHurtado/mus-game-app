@@ -40,7 +40,7 @@ class Logger extends EventEmitter {
       case LogLevel.WARN:
         return `⚠️ [${timestamp}]  [${level.toUpperCase()}]: ${message}`;
       case LogLevel.ERROR:
-        return `❌ [${timestamp}]  [${level.toUpperCase()}]: ${message} \n${new Error().stack}`;
+        return `❌ [${timestamp}]  [${level.toUpperCase()}]: ${message} \n ${new Error().stack}`;
       case LogLevel.DEBUG:
         return `🐛 [${timestamp}]  [${level.toUpperCase()}]: ${message}`;
       default:

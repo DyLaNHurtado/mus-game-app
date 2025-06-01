@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Simulador de Mus - Backend Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .left-panel, .right-panel {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-card h4 {
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .info-card .value {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-card {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .player-card.active {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .player-card.team-0 {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .player-card.team-1 {
+            border-left: 4px solid #27ae60;
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .player-team {
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .team-0 .player-team {
+            background: #fadbd8;
+            color: #c0392b;
+        }
+
+        .team-1 .player-team {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .hand {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 0.8em;
+            min-width: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .card.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .card-suit {
+            font-weight: bold;
+        }
+
+        .suit-oros { color: #f39c12; }
+        .suit-copas { color: #e74c3c; }
+        .suit-espadas { color: #2c3e50; }
+        .suit-bastos { color: #27ae60; }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 3px;
+        }
+
+        .log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-info { color: #3498db; }
+        .log-success { color: #27ae60; }
+        .log-error { color: #e74c3c; }
+        .log-warning { color: #f39c12; }
+
+        .hand-selector {
+            margin-top: 10px;
+        }
+
+        .hand-selector select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .score {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .score.team-0 {
+            background: #fadbd8;
+            color: #c0392b;
+        }
+
+        .score.team-1 {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .phase-indicator {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-connected {
+            background: #27ae60;
+        }
+
+        .status-disconnected {
+            background: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Simulador de Mus</h1>
+            <p>Interfaz interactiva para testing del backend</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <!-- Controles principales -->
+                <div class="section">
+                    <h3>🎯 Controles Principales</h3>
+                    <div class="controls">
+                        <button class="btn btn-success" onclick="createGame()">🎮 Crear Partida</button>
+                        <button class="btn btn-warning" onclick="simulateGame()" id="simulateBtn" disabled>🤖 Simular Auto</button>
+                        <button class="btn btn-primary" onclick="refreshGame()" id="refreshBtn" disabled>🔄 Actualizar</button>
+                        <button class="btn btn-danger" onclick="cleanup()">🧹 Limpiar Todo</button>
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="runBasicTests()">🧪 Tests Básicos</button>
+                        <button class="btn btn-primary" onclick="showAvailableHands()">👀 Ver Manos</button>
+                    </div>
+                </div>
+
+                <!-- Estado del juego -->
+                <div class="section">
+                    <h3>📊 Estado del Juego</h3>
+                    <div id="gameInfo" class="loading show">
+                        <p>No hay partida activa. Crea una partida para empezar.</p>
+                    </div>
+                </div>
+
+                <!-- Jugadores -->
+                <div class="section">
+                    <h3>👥 Jugadores</h3>
+                    <div id="playersContainer" class="loading show">
+                        <p>Esperando partida...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <!-- Log de actividad -->
+                <div class="section">
+                    <h3>📝 Log de Actividad</h3>
+                    <div id="log" class="log">
+                        <div class="log-entry log-info">🚀 Simulador iniciado. Crea una partida para empezar.</div>
+                    </div>
+                    <div class="controls" style="margin-top: 10px;">
+                        <button class="btn btn-warning" onclick="clearLog()">🗑️ Limpiar Log</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentGameId = null;
+        let currentGameState = null;
+        let selectedCards = new Map(); // playerId -> [cardIndices]
+
+        const API_BASE = window.location.origin;
+
+        // Utilidades de logging
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.innerHTML = `[${timestamp}] ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+            log('Log limpiado', 'info');
+        }
+
+        // API calls
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                log(`❌ Error en ${endpoint}: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // Crear partida
+        async function createGame() {
+            try {
+                log('🎮 Creando nueva partida...', 'info');
+                const result = await apiCall('/test/create-game', { method: 'POST' });
+                
+                currentGameId = result.gameId;
+                log(`✅ Partida creada: ${currentGameId}`, 'success');
+                log(`👥 Jugadores: ${result.players.map(p => `${p.name} (Equipo ${p.team})`).join(', ')}`, 'info');
+                
+                document.getElementById('simulateBtn').disabled = false;
+                document.getElementById('refreshBtn').disabled = false;
+                
+                await refreshGame();
+            } catch (error) {
+                log(`❌ Error creando partida: ${error.message}`, 'error');
+            }
+        }
+
+        // Actualizar estado del juego
+        async function refreshGame() {
+            if (!currentGameId) {
+                log('⚠️ No hay partida activa', 'warning');
+                return;
+            }
+
+            try {
+                const result = await apiCall(`/test/game/${currentGameId}`);
+                currentGameState = result;
+                updateGameDisplay();
+                
+                // También obtener las manos
+                const handsResult = await apiCall(`/test/hands/${currentGameId}`);
+                updatePlayersDisplay(handsResult.hands);
+                
+            } catch (error) {
+                log(`❌ Error actualizando juego: ${error.message}`, 'error');
+            }
+        }
+
+        // Actualizar display del estado del juego
+        function updateGameDisplay() {
+            const container = document.getElementById('gameInfo');
+            const state = currentGameState.gameState;
+            
+            container.innerHTML = `
+                <div class="phase-indicator">
+                    Fase: ${getPhaseDisplayName(state.currentPhase)} | Mano: ${state.currentHand}
+                </div>
+                
+                <div class="game-info">
+                    <div class="info-card">
+                        <h4>Turno Actual</h4>
+                        <div class="value">${getCurrentPlayerName()}</div>
+                    </div>
+                    <div class="info-card">
+                        <h4>Estado</h4>
+                        <div class="value">${state.isFinished ? '🏆 Terminada' : '🎮 En Curso'}</div>
+                    </div>
+                    ${state.winner !== undefined ? `
+                    <div class="info-card">
+                        <h4>Ganador</h4>
+                        <div class="value">Equipo ${state.winner}</div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <div class="scores">
+                    <div class="score team-0">
+                        <div>Equipo 0</div>
+                        <div style="font-size: 1.5em;">${state.scores[0]}</div>
+                    </div>
+                    <div class="score team-1">
+                        <div>Equipo 1</div>
+                        <div style="font-size: 1.5em;">${state.scores[1]}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Actualizar display de jugadores
+        function updatePlayersDisplay(hands) {
+            const container = document.getElementById('playersContainer');
+            const currentTurn = currentGameState.gameState.currentTurn;
+            
+            container.innerHTML = `
+                <div class="players-grid">
+                    ${hands.map((hand, index) => `
+                        <div class="player-card team-${hand.team} ${index === currentTurn ? 'active' : ''}">
+                            <div class="player-header">
+                                <span class="player-name">
+                                    <span class="status-indicator ${currentGameState.players[index].isConnected ? 'status-connected' : 'status-disconnected'}"></span>
+                                    ${hand.playerName}
+                                </span>
+                                <span class="player-team">Equipo ${hand.team}</span>
+                            </div>
+                            
+                            <div class="hand">
+                                ${hand.hand.map((card, cardIndex) => `
+                                    <div class="card ${selectedCards.get(hand.playerId)?.includes(cardIndex) ? 'selected' : ''}" 
+                                         onclick="toggleCardSelection('${hand.playerId}', ${cardIndex})">
+                                        <div class="card-suit suit-${card.suit}">${getCardSymbol(card.suit)}</div>
+                                        <div>${card.value}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="hand-selector">
+                                <select onchange="setPlayerHand('${hand.playerId}', this.value)">
+                                    <option value="">Cambiar mano...</option>
+                                    <option value="paresReyes">Pares de Reyes</option>
+                                    <option value="juego31">Juego 31</option>
+                                    <option value="mediasAses">Medias de Ases</option>
+                                    <option value="manoMala">Mano Mala</option>
+                                </select>
+                            </div>
+                            
+                            <div class="actions">
+                                ${getAvailableActions(hand.playerId, index === currentTurn).map(action => `
+                                    <button class="btn action-btn ${action.class}" 
+                                            onclick="playAction('${hand.playerId}', '${action.type}', ${action.amount || 'null'})"
+                                            ${action.disabled ? 'disabled' : ''}>
+                                        ${action.label}
+                                    </button>
+                                `).join('')}
+                                
+                                ${selectedCards.get(hand.playerId)?.length > 0 ? `
+                                    <button class="btn action-btn btn-warning" 
+                                            onclick="discardCards('${hand.playerId}')">
+                                        🗑️ Descartar (${selectedCards.get(hand.playerId).length})
+                                    </button>
+                                ` : ''}
+                            </div>
+                            
+                            ${hand.handEvaluation ? `
+                                <div style="margin-top: 10px; font-size: 0.8em; color: #7f8c8d;">
+                                    ${hand.handEvaluation.hand.description}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Obtener acciones disponibles para un jugador
+        function getAvailableActions(playerId, isCurrentTurn) {
+            if (!currentGameState || !isCurrentTurn) {
+                return [];
+            }
+
+            const phase = currentGameState.gameState.currentPhase;
+            const actions = [];
+
+            switch (phase) {
+                case 'mus':
+                    actions.push(
+                        { type: 'mus', label: '✋ Mus', class: 'btn-primary' },
+                        { type: 'no-mus', label: '🚫 No Mus', class: 'btn-danger' }
+                    );
+                    break;
+
+                case 'grande':
+                case 'chica':
+                case 'juego':
+                case 'punto':
+                    actions.push(
+                        { type: 'paso', label: '👋 Paso', class: 'btn-warning' },
+                        { type: 'envido', label: '💰 Envido 2', class: 'btn-success', amount: 2 },
+                        { type: 'envido', label: '💰 Envido 3', class: 'btn-success', amount: 3 },
+                        { type: 'ordago', label: '🔥 Órdago', class: 'btn-danger' }
+                    );
+                    break;
+
+                case 'pares':
+                    actions.push(
+                        { type: 'paso', label: '👋 Paso', class: 'btn-warning' },
+                        { type: 'ordago', label: '🔥 Órdago', class: 'btn-danger' }
+                    );
+                    break;
+            }
+
+            // Si hay una apuesta activa, solo permitir aceptar/rechazar
+            if (currentGameState.gameState.phaseData.currentBet) {
+                return [
+                    { type: 'acepto', label: '✅ Acepto', class: 'btn-success' },
+                    { type: 'rechazo', label: '❌ Rechazo', class: 'btn-danger' }
+                ];
+            }
+
+            return actions;
+        }
+
+        // Seleccionar/deseleccionar carta
+        function toggleCardSelection(playerId, cardIndex) {
+            if (!selectedCards.has(playerId)) {
+                selectedCards.set(playerId, []);
+            }
+            
+            const selected = selectedCards.get(playerId);
+            const index = selected.indexOf(cardIndex);
+            
+            if (index > -1) {
+                selected.splice(index, 1);
+            } else {
+                selected.push(cardIndex);
+            }
+            
+            // Actualizar display
+            refreshGame();
+        }
+
+        // Ejecutar acción
+        async function playAction(playerId, actionType, amount = null) {
+            try {
+                const action = { type: actionType };
+                if (amount !== null) {
+                    action.amount = amount;
+                }
+
+                log(`🎯 ${getCurrentPlayerName()} juega: ${actionType}${amount ? ` (${amount})` : ''}`, 'info');
+                
+                const result = await apiCall(`/test/action/${currentGameId}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ playerId, action })
+                });
+
+                log(`✅ ${result.result.message}`, 'success');
+                
+                if (result.result.phaseComplete) {
+                    log(`🏁 Fase completada: ${result.result.message}`, 'success');
+                }
+
+                await refreshGame();
+            } catch (error) {
+                log(`❌ Error ejecutando acción: ${error.message}`, 'error');
+            }
+        }
+
+        // Descartar cartas
+        async function discardCards(playerId) {
+            const cardIndices = selectedCards.get(playerId) || [];
+            
+            if (cardIndices.length === 0) {
+                log('⚠️ Selecciona cartas para descartar', 'warning');
+                return;
+            }
+
+            try {
+                log(`🗑️ Descartando ${cardIndices.length} cartas...`, 'info');
+                
+                const result = await apiCall(`/test/discard/${currentGameId}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ playerId, cardIndices })
+                });
+
+                log(`✅ ${result.message}`, 'success');
+                selectedCards.delete(playerId);
+                
+                await refreshGame();
+            } catch (error) {
+                log(`❌ Error descartando: ${error.message}`, 'error');
+            }
+        }
+
+        // Establecer mano específica
+        async function setPlayerHand(playerId, handType) {
+            if (!handType) return;
+
+            try {
+                log(`🎴 Estableciendo mano ${handType}...`, 'info');
+                
+                const result = await apiCall(`/test/set-hand/${currentGameId}`, {
+                    method: 'POST',
+                    body: JSON.stringify({ playerId, handType })
+                });
+
+                log(`✅ ${result.message}`, 'success');
+                await refreshGame();
+            } catch (error) {
+                log(`❌ Error estableciendo mano: ${error.message}`, 'error');
+            }
+        }
+
+        // Simular partida automática
+        async function simulateGame() {
+            if (!currentGameId) {
+                log('⚠️ No hay partida activa', 'warning');
+                return;
+            }
+
+            try {
+                log('🤖 Iniciando simulación automática...', 'info');
+                
+                await apiCall(`/test/simulate/${currentGameId}`, { method: 'POST' });
+                
+                log('✅ Simulación iniciada en background', 'success');
+                
+                // Actualizar cada 2 segundos durante la simulación
+                const interval = setInterval(async () => {
+                    await refreshGame();
+                    
+                    if (currentGameState?.gameState.isFinished) {
+                        clearInterval(interval);
+                        log('🏆 Simulación completada', 'success');
+                    }
+                }, 2000);
+                
+            } catch (error) {
+                log(`❌ Error en simulación: ${error.message}`, 'error');
+            }
+        }
+
+        // Ejecutar tests básicos
+        async function runBasicTests() {
+            try {
+                log('🧪 Ejecutando tests básicos...', 'info');
+                
+                const result = await apiCall('/test/run-basic');
+                
+                result.logs.forEach(logEntry => {
+                    const type = logEntry.includes('ERROR') ? 'error' : 
+                               logEntry.includes('✅') ? 'success' : 'info';
+                    log(logEntry.replace(/^(INFO|ERROR): /, ''), type);
+                });
+                
+            } catch (error) {
+                log(`❌ Error en tests: ${error.message}`, 'error');
+            }
+        }
+
+        // Mostrar manos disponibles
+        async function showAvailableHands() {
+            try {
+                const result = await apiCall('/test/available-hands');
+                
+                log('👀 Manos disponibles para testing:', 'info');
+                result.handDetails.forEach(hand => {
+                    log(`  • ${hand.name}: ${hand.cards.join(', ')}`, 'info');
+                });
+                
+            } catch (error) {
+                log(`❌ Error obteniendo manos: ${error.message}`, 'error');
+            }
+        }
+
+        // Limpiar todo
+        async function cleanup() {
+            try {
+                log('🧹 Limpiando partidas...', 'info');
+                
+                await apiCall('/test/cleanup', { method: 'DELETE' });
+                
+                currentGameId = null;
+                currentGameState = null;
+                selectedCards.clear();
+                
+                document.getElementById('simulateBtn').disabled = true;
+                document.getElementById('refreshBtn').disabled = true;
+                
+                document.getElementById('gameInfo').innerHTML = '<div class="loading show"><p>No hay partida activa. Crea una partida para empezar.</p></div>';
+                document.getElementById('playersContainer').innerHTML = '<div class="loading show"><p>Esperando partida...</p></div>';
+                
+                log('✅ Limpieza completada', 'success');
+                
+            } catch (error) {
+                log(`❌ Error en limpieza: ${error.message}`, 'error');
+            }
+        }
+
+        // Utilidades
+        function getPhaseDisplayName(phase) {
+            const names = {
+                'waiting': 'Esperando',
+                'mus': 'Mus',
+                'grande': 'Grande',
+                'chica': 'Chica',
+                'pares': 'Pares',
+                'juego': 'Juego',
+                'punto': 'Punto',
+                'counting': 'Contando',
+                'finished': 'Terminada'
+            };
+            return names[phase] || phase;
+        }
+
+        function getCurrentPlayerName() {
+            if (!currentGameState) return 'N/A';
+            const currentTurn = currentGameState.gameState.currentTurn;
+            return currentGameState.players[currentTurn]?.name || 'N/A';
+        }
+
+        function getCardSymbol(suit) {
+            const symbols = {
+                'oros': '🟡',
+                'copas': '🔴',
+                'espadas': '⚫',
+                'bastos': '🟢'
+            };
+            return symbols[suit] || suit;
+        }
+
+        // Auto-refresh cada 5 segundos si hay partida activa
+        setInterval(() => {
+            if (currentGameId && currentGameState && !currentGameState.gameState.isFinished) {
+                refreshGame();
+            }
+        }, 5000);
+
+        // Inicialización
+        log('🎮 Simulador de Mus cargado y listo', 'success');
+        log('💡 Tip: Crea una partida para empezar a probar el backend', 'info');
+    </script>
+</body>
+</html>

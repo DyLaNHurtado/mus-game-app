@@ -21,3 +21,10 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+backend/.env
+backend/package-lock.json
+backend/src/logs/app.log
+src/components/RoomCodeDisplay.vue
+src/views/HomeView.vue
+src/views/JoinRoomView.vue
+src/views/RoomView.vue
