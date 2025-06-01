@@ -3,6 +3,7 @@ import type { GameManager } from "@/core/GameManager"
 import { TestUtils } from "@/utils/testUtils"
 import { logger } from "@/utils/logger"
 import type { Game } from "@/core/Game"
+import path from "path"
 
 const router = Router()
 
@@ -22,6 +23,15 @@ router.get("/health", (req, res) => {
     activeGames: activeGames.size,
   })
 })
+
+/**
+ * GET test/simulator
+ * Servir la página del simulador interactivo
+ */
+router.get("/simulator", (_req, res) => {
+  res.sendFile(path.join(__dirname, "../logs/simulator.html"))
+})
+
 
 /**
  * POST /test/create-game

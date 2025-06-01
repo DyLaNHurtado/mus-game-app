@@ -54,7 +54,7 @@ export class Game {
       player.setHand(hand)
     })
 
-    logger.info(`Cartas rerooms a todos los jugadores ${this.gameState.players.map(p => p.name +" " +JSON.stringify(p.hand) ).join(", ")}`);
+    logger.info(`Cartas repartidas a todos los jugadores ${this.gameState.players.map(p => p.name +" " +JSON.stringify(p.hand) ).join(", ")}`);
   }
 
   // Crear datos vacíos de fase
