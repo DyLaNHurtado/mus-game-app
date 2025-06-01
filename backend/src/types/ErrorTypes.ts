@@ -1,6 +1,6 @@
 export enum ErrorMessages {
-  ROOM_NOT_FOUND = "Sala no encontrada",
-  ROOM_FULL = "La sala está llena",
+  ROOM_NOT_FOUND = "room no encontrada",
+  ROOM_FULL = "La room está llena",
   GAME_ALREADY_STARTED = "La partida ya ha comenzado",
   NOT_ENOUGH_PLAYERS = "No hay suficientes jugadores",
   INVALID_ACTION = "Acción no válida",

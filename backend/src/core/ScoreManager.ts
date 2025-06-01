@@ -34,10 +34,7 @@ export class ScoreManager {
 
     this.scoreHistory.push(update);
 
-    logger.debug(
-      `Equipo ${team} suma ${points} puntos (${reason}). Total: ${this.scores[team]}`,
-      "",
-    );
+    logger.info(`Equipo ${team} suma ${points} puntos (${reason}). Total: ${this.scores[team]}`);
   }
 
   // Verificar si hay un ganador

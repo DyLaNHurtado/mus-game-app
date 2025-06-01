@@ -9,7 +9,7 @@ export class GameManager {
   private games: Map<string, Game> = new Map();
   private playerToRoom: Map<string, string> = new Map();
 
-  // Crear nueva sala
+  // Crear nueva room
   createRoom(isPrivate = false): Room {
     const roomId = this.generateRoomId();
 
@@ -22,30 +22,30 @@ export class GameManager {
     };
 
     this.rooms.set(roomId, room);
-    logger.game(`Nueva sala creada: ${roomId}`, roomId);
+    logger.info(`Nueva room creada: ${roomId}`);
 
     return room;
   }
 
-  // Obtener sala por ID
+  // Obtener room por ID
   getRoom(roomId: string): Room | undefined {
     return this.rooms.get(roomId);
   }
 
-  // Unir jugador a sala
+  // Unir jugador a room
   joinRoom(roomId: string, playerName: string, socketId: string): { room: Room; player: Player } {
     let room = this.getRoom(roomId);
 
-    // Si la sala no existe, crearla
+    // Si la room no existe, crearla
     if (!room) {
       room = this.createRoom();
       room.id = roomId; // Usar el ID proporcionado
       this.rooms.set(roomId, room);
     }
 
-    // Verificar si la sala está llena
+    // Verificar si la room está llena
     if (room.players.length >= room.maxPlayers) {
-      throw new Error("La sala está llena");
+      throw new Error("La room está llena");
     }
 
     // Verificar si ya hay una partida en curso
@@ -55,7 +55,7 @@ export class GameManager {
       if (existingPlayer && !existingPlayer.isConnected) {
         existingPlayer.reconnect(socketId);
         this.playerToRoom.set(existingPlayer.id, roomId);
-        logger.game(`Jugador reconectado: ${playerName}`, roomId);
+        logger.info(`Jugador reconectado: ${playerName}`);
         return { room, player: existingPlayer };
       } else {
         throw new Error("La partida ya ha comenzado");
@@ -71,13 +71,12 @@ export class GameManager {
     const position = room.players.length as 0 | 1 | 2 | 3;
     const player = new Player(playerName, socketId, position);
 
-    // Añadir jugador a la sala
+    // Añadir jugador a la room
     room.players.push(player);
     this.playerToRoom.set(player.id, roomId);
 
-    logger.game(
-      `Jugador ${playerName} se unió a la sala (${room.players.length}/${room.maxPlayers})`,
-      roomId,
+    logger.info(
+      `Jugador ${playerName} se unió a la room ${roomId} (${room.players.length}/${room.maxPlayers})`,
     );
 
     // Auto-iniciar si hay 4 jugadores
@@ -88,7 +87,7 @@ export class GameManager {
     return { room, player };
   }
 
-  // Salir de sala
+  // Salir de room
   leaveRoom(playerId: string): { room: Room | undefined; player: Player | undefined } {
     const roomId = this.playerToRoom.get(playerId);
     if (!roomId) {
@@ -110,15 +109,15 @@ export class GameManager {
     // Si hay partida en curso, marcar como desconectado en lugar de eliminar
     if (room.gameState && !room.gameState.isGameFinished) {
       player.disconnect();
-      logger.game(`Jugador ${player.name} se desconectó durante la partida`, roomId);
+      logger.info(`Jugador ${player.name} se desconectó durante la partida en la room ${roomId}`);
     } else {
       // Eliminar jugador si no hay partida
       room.players.splice(playerIndex, 1);
       this.playerToRoom.delete(playerId);
-      logger.game(`Jugador ${player.name} salió de la sala`, roomId);
+      logger.info(`Jugador ${player.name} salió de la room ${roomId}`);
     }
 
-    // Eliminar sala si está vacía y no hay partida
+    // Eliminar room si está vacía y no hay partida
     if (room.players.length === 0 || room.players.every((p) => !p.isConnected)) {
       this.deleteRoom(roomId);
     }
@@ -130,7 +129,7 @@ export class GameManager {
   startGame(roomId: string): Game {
     const room = this.getRoom(roomId);
     if (!room) {
-      throw new Error("Sala no encontrada");
+      throw new Error("room no encontrada");
     }
 
     if (room.players.length !== GAME_CONFIG.MAX_PLAYERS) {
@@ -145,10 +144,10 @@ export class GameManager {
     const game = new Game(roomId, room.players);
     this.games.set(roomId, game);
 
-    // Actualizar estado de la sala
+    // Actualizar estado de la room
     room.gameState = game.getGameState();
 
-    logger.game(`Partida iniciada con 4 jugadores`, roomId);
+    logger.info(`Partida iniciada con 4 jugadores en la room ${roomId}`);
 
     return game;
   }
@@ -158,7 +157,7 @@ export class GameManager {
     return this.games.get(roomId);
   }
 
-  // Eliminar sala
+  // Eliminar room
   private deleteRoom(roomId: string): void {
     const room = this.getRoom(roomId);
     if (room) {
@@ -170,14 +169,14 @@ export class GameManager {
       // Eliminar partida si existe
       this.games.delete(roomId);
 
-      // Eliminar sala
+      // Eliminar room
       this.rooms.delete(roomId);
 
-      logger.game(`Sala eliminada`, roomId);
+      logger.info(`room ${roomId} eliminada`);
     }
   }
 
-  // Generar ID único para sala
+  // Generar ID único para room
   private generateRoomId(): string {
     let roomId: string;
     do {
@@ -232,7 +231,7 @@ export class GameManager {
     );
   }
 
-  // Limpiar salas inactivas (ejecutar periódicamente)
+  // Limpiar rooms inactivas (ejecutar periódicamente)
   cleanupInactiveRooms(): void {
     const now = new Date();
     const inactiveThreshold = 2 * 60 * 60 * 1000; // 2 horas
@@ -244,7 +243,7 @@ export class GameManager {
 
       if (isInactive && hasNoConnectedPlayers && hasNoGameOrFinished) {
         this.deleteRoom(roomId);
-        logger.info(`Sala inactiva eliminada: ${roomId}`);
+        logger.info(`room inactiva eliminada: ${roomId}`);
       }
     }
   }

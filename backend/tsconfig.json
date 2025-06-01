@@ -29,7 +29,10 @@
       "@/sockets/*": ["sockets/*"],
       "@/utils/*": ["utils/*"],
       "@/types/*": ["types/*"],
-      "@/config/*": ["config/*"]
+      "@/config/*": ["config/*"],
+      "@/middlewares/*": ["middlewares/*"],
+      "@/services/*": ["services/*"],
+      "@/routes/*": ["routes/*"],
     }
   },
   "include": ["src/**/*"],

@@ -1,0 +1,76 @@
+ℹ️ [01/06/2025, 01:37:50]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:37:50]  [INFO]:  Logs se pueden ver en: http://localhost:3001/logs/view/
+ℹ️ [01/06/2025, 01:37:50]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:37:50]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:37:50]  [INFO]: 🚀 Mus Backend Server running: http://localhost:3001
+ℹ️ [01/06/2025, 01:37:50]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:37:16]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:37:16]  [INFO]:  Logs se pueden ver en: http://localhost:3001/logs/view/
+ℹ️ [01/06/2025, 01:37:16]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:37:16]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:37:16]  [INFO]: 🚀 Mus Backend Server running: http://localhost:3001
+ℹ️ [01/06/2025, 01:37:16]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 01:09:53]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 01:09:42]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 01:09:18]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 01:08:39]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 01:07:24]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 00:53:58]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 00:53:20]  [INFO]: SocketHandler inicializado
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 📅 Current Environment: development
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🔌 Socket.IO ready for connections
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🎮 Game Manager initialized
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🚀 Mus Backend Server running on port http://localhost:3001
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🌐 WebSocket URL: ws://localhost/socket.io
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🌐 Client URL: http://localhost:3000
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: 🌐 API URL: http://localhost/api
+ℹ️ [01/06/2025, 00:52:50]  [INFO]: SocketHandler inicializado

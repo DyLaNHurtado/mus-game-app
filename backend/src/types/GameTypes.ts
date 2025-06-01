@@ -55,10 +55,6 @@ export interface Room {
   maxPlayers: number;
 }
 
-
-
 export interface InterServerEvents {
   ping: () => void;
 }
-
-
