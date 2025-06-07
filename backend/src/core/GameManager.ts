@@ -9,6 +9,17 @@ export class GameManager {
   private games: Map<string, Game> = new Map();
   private playerToRoom: Map<string, string> = new Map();
 
+
+  // Get todas las rooms publicas
+public getRooms(onlyPublic = true): Room[] {
+  if (this.rooms.size === 0) return [];
+
+  const roomsArray = Array.from(this.rooms.values());
+  return onlyPublic
+    ? roomsArray.filter(room => !room.isPrivate)
+    : roomsArray;
+}
+
   // Crear nueva room
   createRoom(isPrivate = false): Room {
     const roomId = this.generateRoomId();
@@ -22,7 +33,7 @@ export class GameManager {
     };
 
     this.rooms.set(roomId, room);
-    logger.info(`Nueva room creada: ${roomId}`);
+    logger.info(`Creando nueva room ${isPrivate ? `privada` : `publica`} : ${roomId}...`);
 
     return room;
   }

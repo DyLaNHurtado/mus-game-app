@@ -6,6 +6,7 @@ import { errorHandler } from "@/middlewares/errorHandler";
 import { setupGracefulShutdown } from "@/services/setupGracefulShutdown";
 import { GameManager } from "@/core/GameManager";
 import { logger } from "@/utils/logger";
+import { setupRoomRoutes } from "./routes/RoomRoutes";
 
 const app = setupExpressApp();
 const server = createServer(app);
@@ -15,6 +16,8 @@ const gameManager = new GameManager();
 
 // Configurar rutas
 app.use(setupRoutes(gameManager));
+app.use("/room", setupRoomRoutes(gameManager));
+
 
 // Manejo de errores global
 app.use(errorHandler);
