@@ -80,7 +80,9 @@ public getRooms(onlyPublic = true): Room[] {
 
     // Crear nuevo jugador
     const position = room.players.length as 0 | 1 | 2 | 3;
-    const player = new Player(playerName, socketId, position);
+
+    /* TODO: Ver que hacer en caso de no haber creado el player este caso no se deberia dar */
+    const player = new Player("idNuevo", playerName, 0, position, socketId );
 
     // Añadir jugador a la room
     room.players.push(player);

@@ -214,6 +214,7 @@ export class SocketHandler {
                 this.io.to(roomId).emit(SocketEvents.ACTION_PLAYED, {
                     playerId,
                     action: {
+                        playerId,
                         type: "descarte" as any,
                         amount: validatedData.cardIndices.length,
                         timestamp: Date.now(),
@@ -258,6 +259,7 @@ export class SocketHandler {
         this.io.to(roomId).emit(SocketEvents.ACTION_PLAYED, {
           playerId,
           action: {
+            playerId,
             ...validatedAction,
             timestamp: Date.now(),
           },
