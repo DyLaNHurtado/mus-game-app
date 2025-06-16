@@ -75,7 +75,6 @@ export function createSpanishDeck(): Card[] {
       deck.push({
         suit,
         value,
-        musValue: MUS_VALUES[value],
       });
     }
 
@@ -84,7 +83,6 @@ export function createSpanishDeck(): Card[] {
       deck.push({
         suit,
         value,
-        musValue: MUS_VALUES[value],
       });
     }
   }

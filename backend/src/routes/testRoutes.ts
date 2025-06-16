@@ -1,485 +1,297 @@
 import { Router } from "express"
-import type { GameManager } from "@/core/GameManager"
-import { TestUtils } from "@/utils/testUtils"
-import { logger } from "@/utils/logger"
-import type { Game } from "@/core/Game"
-import path from "path"
+import { GameManager } from "../core/GameManager"
+import { logger } from "../utils/logger"
+import { GamePhase } from "@/types/GameTypes"
+import { TestUtils } from "../utils/testUtils"
 
 const router = Router()
+const gameManager = GameManager.getInstance()
 
-// Instancia global del GameManager para testing
-let testGameManager: GameManager | null = null
-const activeGames = new Map<string, Game>()
+// Middleware de admin
+const requireAdmin = (req: any, res: any, next: any) => {
+  const { adminKey } = req.body || req.query
+  if (adminKey !== process.env.ADMIN_KEY && adminKey !== "test123") {
+    return res.status(403).json({ error: "Admin key requerida" })
+  }
+  next()
+}
 
-/**
- * GET /test/health
- * Verificar que el sistema de testing está funcionando
- */
-router.get("/health", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Sistema de testing funcionando",
-    timestamp: new Date().toISOString(),
-    activeGames: activeGames.size,
-  })
-})
-
-/**
- * GET test/simulator
- * Servir la página del simulador interactivo
- */
-router.get("/simulator", (_req, res) => {
-  res.sendFile(path.join(__dirname, "../logs/simulator.html"))
-})
-
-
-/**
- * POST /test/create-game
- * Crear una partida de prueba con 4 jugadores automáticamente
- */
-router.post("/create-game", (req, res) => {
+// 🎮 CREAR PARTIDA DE PRUEBA CON 4 JUGADORES AUTOMÁTICOS
+router.post("/create-test-game", requireAdmin, (req, res) => {
   try {
-    const { gameManager, game, players } = TestUtils.createTestGame()
+    const { roomId } = req.body
+    const testRoomId = roomId || TestUtils.generateTestRoomId()
 
-    // Guardar referencias
-    testGameManager = gameManager
-    activeGames.set(game.getGameState().id, game)
+    // Crear room
+    const room = gameManager.createRoom(false, testRoomId)
 
-    const gameState = game.getGameState()
+    // Añadir 4 jugadores de prueba
+    const testPlayers = TestUtils.createTestPlayers()
 
-    logger.info(`🎮 Partida de prueba creada: ${gameState.id}`)
+    const players = []
+    for (const playerData of testPlayers) {
+      const result = gameManager.joinRoom(room.id, playerData.name, `socket-${playerData.name}`)
+      players.push(result.player)
+    }
+
+    const game = gameManager.getGame(room.id)
 
     res.json({
       success: true,
-      gameId: gameState.id,
-      players: players.map((p) => ({
-        id: p.id,
-        name: p.name,
-        team: p.team,
-        position: p.position,
-      })),
-      gameState: {
-        currentPhase: gameState.currentPhase,
-        currentTurn: gameState.currentTurn,
-        currentHand: gameState.currentHand,
-        scores: gameState.scores,
-      },
-      message: "Partida creada con 4 jugadores automáticamente",
+      message: "Partida de prueba creada",
+      roomId: room.id,
+      players: players.map((p) => ({ id: p.id, name: p.name, team: p.team })),
+      gameState: game?.getPublicGameState(),
     })
   } catch (error) {
-    logger.error(` creating test game: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al crear partida de prueba",
-      details: error instanceof Error ? error.message : "Error desconocido",
-    })
+    logger.error(`Error creating test game: ${error}`)
+    res.status(500).json({ error: "Error al crear partida de prueba" })
   }
 })
 
-/**
- * GET /test/games
- * Listar todas las partidas de prueba activas
- */
-router.get("/games", (req, res) => {
+// 🔍 VER ESTADO COMPLETO (CARTAS DE TODOS)
+router.get("/game/:roomId/debug", requireAdmin, (req, res) => {
   try {
-    const games = Array.from(activeGames.entries()).map(([id, game]) => {
-      const gameState = game.getGameState()
-      return {
-        id,
-        currentPhase: gameState.currentPhase,
-        currentHand: gameState.currentHand,
-        scores: gameState.scores,
-        isFinished: gameState.isGameFinished,
-        winner: gameState.winner,
+    const { roomId } = req.params
+    const game = gameManager.getGame(roomId)
+
+    if (!game) {
+      return res.status(404).json({ error: "Partida no encontrada" })
+    }
+
+    const gameState = game.getGameState() // Estado completo
+
+    res.json({
+      success: true,
+      gameState: {
+        ...gameState,
         players: gameState.players.map((p) => ({
+          id: p.id,
           name: p.name,
           team: p.team,
+          position: p.position,
+          hand: p.hand, // 🔥 Mostrar cartas de todos
           isConnected: p.isConnected,
+          lastAction: p.getLastAction(),
         })),
-      }
-    })
-
-    res.json({
-      success: true,
-      totalGames: games.length,
-      games,
+      },
+      recommendations: getRecommendations(gameState),
+      validation: TestUtils.validateGameState(gameState),
     })
   } catch (error) {
-    logger.error(`Error listing games: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al listar partidas",
-    })
+    logger.error(`Error getting debug info: ${error}`)
+    res.status(500).json({ error: "Error al obtener información de debug" })
   }
 })
 
-/**
- * GET /test/game/:gameId
- * Obtener estado detallado de una partida específica
- */
-router.get("/game/:gameId", (req, res) => {
+// 🎯 EJECUTAR ACCIÓN COMO CUALQUIER JUGADOR
+router.post("/game/:roomId/force-action", requireAdmin, (req, res) => {
   try {
-    const { gameId } = req.params
-    const game = activeGames.get(gameId)
+    const { roomId } = req.params
+    const { playerName, action } = req.body
 
+    const game = gameManager.getGame(roomId)
     if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
+      return res.status(404).json({ error: "Partida no encontrada" })
     }
 
     const gameState = game.getGameState()
-    const teamInfo = game.getTeamInfo()
+    const player = gameState.players.find((p) => p.name === playerName)
 
-    res.json({
-      success: true,
-      gameId,
-      gameState: {
-        id: gameState.id,
-        currentPhase: gameState.currentPhase,
-        currentTurn: gameState.currentTurn,
-        currentHand: gameState.currentHand,
-        scores: gameState.scores,
-        isFinished: gameState.isGameFinished,
-        winner: gameState.winner,
-        phaseData: gameState.phaseData,
-      },
-      teams: teamInfo,
-      players: gameState.players.map((p) => ({
-        id: p.id,
-        name: p.name,
-        team: p.team,
-        position: p.position,
-        isConnected: p.isConnected,
-        handSize: p.hand.length,
-      })),
-    })
-  } catch (error) {
-    logger.error(`getting game state: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al obtener estado de partida",
-    })
-  }
-})
-
-/**
- * POST /test/simulate/:gameId
- * Simular una partida completa automáticamente
- */
-router.post("/simulate/:gameId", async (req, res) => {
-  try {
-    const { gameId } = req.params
-
-    if (!testGameManager) {
-      return res.status(400).json({
-        success: false,
-        error: "No hay GameManager de prueba. Crea una partida primero.",
-      })
+    if (!player) {
+      return res.status(404).json({ error: "Jugador no encontrado" })
     }
 
-    const game = activeGames.get(gameId)
-    if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
-    }
-
-    logger.info(`🤖 Iniciando simulación automática de partida ${gameId}`)
-
-    // Simular partida en background
-    TestUtils.simulateGame(testGameManager, gameId)
-      .then(() => {
-        logger.info(`✅ Simulación de partida ${gameId} completada`)
-      })
-      .catch((error) => {
-        logger.error(`❌ Error en simulación de partida ${gameId}: ${error}`)
-      })
-
-    res.json({
-      success: true,
-      message: "Simulación iniciada en background",
-      gameId,
-      note: "La simulación se ejecuta automáticamente. Usa GET /test/game/:gameId para ver el progreso.",
-    })
-  } catch (error) {
-    logger.error(`Starting simulation: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al iniciar simulación",
-    })
-  }
-})
-
-/**
- * POST /test/action/:gameId
- * Ejecutar una acción específica en una partida
- */
-router.post("/action/:gameId", (req, res) => {
-  try {
-    const { gameId } = req.params
-    const { playerId, action } = req.body
-
-    if (!playerId || !action) {
-      return res.status(400).json({
-        success: false,
-        error: "Se requiere playerId y action en el body",
-      })
-    }
-
-    const game = activeGames.get(gameId)
-    if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
-    }
-
-    const result = game.playAction(playerId, action)
-
-    res.json({
-      success: result.success,
-      result,
-      gameState: game.getPublicGameState(),
-    })
-  } catch (error) {
-    logger.error(`Error executing action: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al ejecutar acción",
-    })
-  }
-})
-
-/**
- * POST /test/discard/:gameId
- * Descartar cartas para un jugador específico
- */
-router.post("/discard/:gameId", (req, res) => {
-  try {
-    const { gameId } = req.params
-    const { playerId, cardIndices } = req.body
-
-    if (!playerId || !Array.isArray(cardIndices)) {
-      return res.status(400).json({
-        success: false,
-        error: "Se requiere playerId y cardIndices (array) en el body",
-      })
-    }
-
-    const game = activeGames.get(gameId)
-    if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
-    }
-
-    const result = game.discardCards(playerId, cardIndices)
+    const result = game.playAction(player.id, action)
 
     res.json({
       success: result.success,
       message: result.message,
-      gameState: game.getPublicGameState(),
-      playerHand: game.getPlayerHand(playerId),
+      action: { playerName, action },
+      newGameState: game.getPublicGameState(),
+      result,
     })
   } catch (error) {
-    logger.error(`discarding cards: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al descartar cartas",
-    })
+    logger.error(`Error forcing action: ${error}`)
+    res.status(500).json({ error: "Error al ejecutar acción forzada" })
   }
 })
 
-/**
- * GET /test/hands/:gameId
- * Ver las manos de todos los jugadores (solo para testing)
- */
-router.get("/hands/:gameId", (req, res) => {
+// 🎲 SIMULAR PARTIDA COMPLETA AUTOMÁTICA
+router.post("/game/:roomId/simulate", requireAdmin, (req, res) => {
   try {
-    const { gameId } = req.params
-    const game = activeGames.get(gameId)
+    const { roomId } = req.params
+    const { steps = 10 } = req.body
+
+    const game = gameManager.getGame(roomId)
+    if (!game) {
+      return res.status(404).json({ error: "Partida no encontrada" })
+    }
+
+    const log = []
+    let gameState = game.getGameState()
+
+    for (let i = 0; i < steps && !gameState.isGameFinished; i++) {
+      const currentPlayer = gameState.players[gameState.currentTurn]
+
+      // Acción automática inteligente
+      const action = getSmartAction(gameState, currentPlayer)
+      const result = game.playAction(currentPlayer.id, action)
+
+      log.push({
+        step: i + 1,
+        player: currentPlayer.name,
+        phase: gameState.currentPhase,
+        action,
+        result: result.message,
+        scores: [...gameState.scores],
+      })
+
+      gameState = game.getGameState()
+    }
+
+    res.json({
+      success: true,
+      message: `Simulación de ${log.length} pasos completada`,
+      log,
+      finalState: game.getPublicGameState(),
+    })
+  } catch (error) {
+    logger.error(`Error simulating game: ${error}`)
+    res.status(500).json({ error: "Error en simulación" })
+  }
+})
+
+// 🔄 FORZAR CAMBIO DE FASE
+router.post("/game/:roomId/force-phase", requireAdmin, (req, res) => {
+  try {
+    const { roomId } = req.params
+    const { phase } = req.body
+
+    const game = gameManager.getGame(roomId)
+    if (!game) {
+      return res.status(404).json({ error: "Partida no encontrada" })
+    }
+
+    // Verificar que el método existe en Game.ts
+    if (typeof game.forcePhase === "function") {
+      game.forcePhase(phase)
+    } else {
+      return res.status(501).json({ error: "Método forcePhase no implementado en Game.ts" })
+    }
+
+    res.json({
+      success: true,
+      message: `Fase cambiada a ${phase}`,
+      gameState: game.getPublicGameState(),
+    })
+  } catch (error) {
+    logger.error(`Error forcing phase: ${error}`)
+    res.status(500).json({ error: "Error al cambiar fase" })
+  }
+})
+
+// 📊 ANÁLISIS DE MANO ACTUAL
+router.get("/game/:roomId/analysis", requireAdmin, (req, res) => {
+  try {
+    const { roomId } = req.params
+    const game = gameManager.getGame(roomId)
 
     if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
+      return res.status(404).json({ error: "Partida no encontrada" })
     }
 
     const gameState = game.getGameState()
-    const hands = gameState.players.map((player) => ({
-      playerId: player.id,
-      playerName: player.name,
-      team: player.team,
-      hand: game.getPlayerHand(player.id),
-      handEvaluation: game.evaluateAllHands().find((h) => h.playerId === player.id),
-    }))
 
     res.json({
       success: true,
-      gameId,
-      currentPhase: gameState.currentPhase,
-      hands,
+      analysis: {
+        currentPhase: gameState.currentPhase,
+        currentPlayer: gameState.players[gameState.currentTurn]?.name,
+        scores: gameState.scores,
+        handNumber: gameState.currentHand,
+      },
+      recommendations: {
+        bestActions: getBestActions(gameState),
+        gameStatus: `Mano ${gameState.currentHand} - ${gameState.scores[0]} vs ${gameState.scores[1]}`,
+      },
+      validation: TestUtils.validateGameState(gameState),
     })
   } catch (error) {
-    logger.error(`Error getting hands: ${error}` )
-    res.status(500).json({
-      success: false,
-      error: "Error al obtener manos",
-    })
+    logger.error(`Error getting analysis: ${error}`)
+    res.status(500).json({ error: "Error en análisis" })
   }
 })
 
-/**
- * POST /test/set-hand/:gameId
- * Establecer una mano específica para un jugador (testing)
- */
-router.post("/set-hand/:gameId", (req, res) => {
-  try {
-    const { gameId } = req.params
-    const { playerId, handType } = req.body
-
-    const game = activeGames.get(gameId)
-    if (!game) {
-      return res.status(404).json({
-        success: false,
-        error: "Partida no encontrada",
-      })
-    }
-
-    const player = game.getPlayer(playerId)
-    if (!player) {
-      return res.status(404).json({
-        success: false,
-        error: "Jugador no encontrado",
-      })
-    }
-
-    const testHands = TestUtils.createTestHands()
-    const selectedHand = testHands[handType]
-
-    if (!selectedHand) {
-      return res.status(400).json({
-        success: false,
-        error: "Tipo de mano no válido",
-        availableHands: Object.keys(testHands),
-      })
-    }
-
-    TestUtils.setPlayerHand(player, selectedHand)
-
-    res.json({
-      success: true,
-      message: `Mano ${handType} establecida para ${player.name}`,
-      playerHand: game.getPlayerHand(playerId),
-    })
-  } catch (error) {
-    logger.error(`Error setting hand: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al establecer mano",
-    })
-  }
+// 📋 LISTA DE COMANDOS DISPONIBLES
+router.get("/commands", (req, res) => {
+  res.json({
+    success: true,
+    commands: {
+      "POST /test/create-test-game": "Crear partida con 4 jugadores automáticos",
+      "GET /test/game/:roomId/debug": "Ver estado completo con cartas",
+      "POST /test/game/:roomId/force-action": "Ejecutar acción como cualquier jugador",
+      "POST /test/game/:roomId/simulate": "Simular pasos automáticos",
+      "POST /test/game/:roomId/force-phase": "Cambiar fase manualmente",
+      "GET /test/game/:roomId/analysis": "Análisis detallado de la mano",
+    },
+    examples: {
+      createGame: {
+        url: "POST /test/create-test-game",
+        body: { adminKey: "test123", roomId: "TEST01" },
+      },
+      forceAction: {
+        url: "POST /test/game/TEST01/force-action",
+        body: { adminKey: "test123", playerName: "Test_Juan", action: { type: "mus" } },
+      },
+      simulate: {
+        url: "POST /test/game/TEST01/simulate",
+        body: { adminKey: "test123", steps: 5 },
+      },
+    },
+  })
 })
 
-/**
- * GET /test/run-basic
- * Ejecutar tests básicos del sistema
- */
-router.get("/run-basic", (req, res) => {
-  try {
-    // Capturar logs de los tests
-    const originalLog = logger.info
-    const originalError = logger.error
-    const logs: string[] = []
+// ==================== MÉTODOS AUXILIARES ====================
 
-    logger.info = (message: string) => {
-      logs.push(`INFO: ${message}`)
-      originalLog(message)
-    }
+function getSmartAction(gameState: any, player: any): any {
+  switch (gameState.currentPhase) {
+    case GamePhase.MUS:
+      // Lógica simple: aceptar mus si la mano es mala
+      return Math.random() > 0.7 ? { type: "no-mus" } : { type: "mus" }
 
-    logger.error = (message: string, error?: any) => {
-      logs.push(`ERROR: ${message} ${error ? JSON.stringify(error) : ""}`)
-      originalError(message)
-    }
+    case GamePhase.GRANDE:
+    case GamePhase.CHICA:
+    case GamePhase.PUNTO:
+      // Pasar la mayoría de las veces
+      return Math.random() > 0.8 ? { type: "envido", amount: 2 } : { type: "paso" }
 
-    // Ejecutar tests
-    TestUtils.runBasicTests()
+    case GamePhase.PARES:
+      // Solo apostar si tiene pares (simplificado)
+      return { type: "paso" }
 
-    // Restaurar logger
-    logger.info = originalLog
-    logger.error = originalError
+    case GamePhase.JUEGO:
+      // Apostar más en juego
+      return Math.random() > 0.6 ? { type: "envido", amount: 2 } : { type: "paso" }
 
-    res.json({
-      success: true,
-      message: "Tests básicos ejecutados",
-      logs,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    logger.error(`Error running basic tests: ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al ejecutar tests básicos",
-    })
+    default:
+      return { type: "paso" }
   }
-})
+}
 
-/**
- * DELETE /test/cleanup
- * Limpiar todas las partidas de prueba
- */
-router.delete("/cleanup", (req, res) => {
-  try {
-    const gameCount = activeGames.size
+function getRecommendations(gameState: any): any {
+  const currentPlayer = gameState.players[gameState.currentTurn]
 
-    activeGames.clear()
-    testGameManager = null
-
-    logger.info(`🧹 Limpieza completada: ${gameCount} partidas eliminadas`)
-
-    res.json({
-      success: true,
-      message: `${gameCount} partidas de prueba eliminadas`,
-      timestamp: new Date().toISOString(),
-    })
-  } catch (error) {
-    logger.error(`during cleanup ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error durante la limpieza",
-    })
+  return {
+    currentPlayer: currentPlayer?.name || "Ninguno",
+    phase: gameState.currentPhase,
+    suggestedActions: ["paso", "envido", "ordago"],
+    gameStatus: `Mano ${gameState.currentHand} - ${gameState.scores[0]} vs ${gameState.scores[1]}`,
   }
-})
+}
 
-/**
- * GET /test/available-hands
- * Obtener tipos de manos disponibles para testing
- */
-router.get("/available-hands", (req, res) => {
-  try {
-    const testHands = TestUtils.createTestHands()
+function getBestActions(gameState: any): string[] {
+  return ["paso", "envido 2", "ordago"]
+}
 
-    res.json({
-      success: true,
-      availableHands: Object.keys(testHands),
-      handDetails: Object.entries(testHands).map(([name, cards]) => ({
-        name,
-        cards: cards.map((card) => `${card.value} de ${card.suit}`),
-        description: name,
-      })),
-    })
-  } catch (error) {
-    logger.error(`getting available hands ${error}`)
-    res.status(500).json({
-      success: false,
-      error: "Error al obtener manos disponibles",
-    })
-  }
-})
-
-export default router;
+export default router

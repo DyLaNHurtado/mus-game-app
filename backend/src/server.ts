@@ -12,7 +12,7 @@ const app = setupExpressApp();
 const server = createServer(app);
 
 // GameManager global
-const gameManager = new GameManager();
+const gameManager =  GameManager.getInstance();
 
 // Configurar rutas
 app.use(setupRoutes(gameManager));

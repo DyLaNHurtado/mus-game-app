@@ -1,13 +1,15 @@
 import type { Player } from "@/core/Player"
 
+export type Suit  = "oros" | "copas" | "espadas" | "bastos"
+export type GameActionType  = "mus" | "no-mus" | "paso" | "envido" | "ordago" | "acepto" | "rechazo" | "quiero"
+
 export interface Card {
-  suit: "oros" | "copas" | "espadas" | "bastos"
+  suit: Suit
   value: number // 1-12 (sin 8 y 9)
-  musValue: number // Valor para el mus (Rey=10, Caballo=11, Sota=12)
 }
 
 export interface GameAction {
-  type: "mus" | "no-mus" | "paso" | "envido" | "ordago" | "acepto" | "rechazo" | "quiero"
+  type: GameActionType
   amount?: number // Para envidos específicos
   timestamp: number
   playerId: string
@@ -48,12 +50,25 @@ export enum GamePhase {
   FINISHED = "finished",
 }
 
+export enum GameActionOptions {
+
+  MUS = "mus",
+  NO_MUS = "no-mus",
+  PASO = "paso",
+  ENVIDO = "envido",
+  ORDAGO = "ordago",
+  ACEPTO = "acepto",
+  RECHAZO = "rechazo",
+  QUIERO = "quiero",
+}
+
 export interface Room {
   id: string
   players: Player[]
   gameState?: GameState
   createdAt: Date
   isPrivate: boolean
+  inGame: boolean
   maxPlayers: number
 }
 

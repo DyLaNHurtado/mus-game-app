@@ -1,7 +1,7 @@
 import { DeckManager } from "./DeckManager"
 import { logger } from "@/utils/logger"
 import { GAME_CONFIG, PHASE_ORDER } from "@/config/constants"
-import { type Card, GamePhase, type GameState, type GameAction, type PhaseData } from "@/types/GameTypes"
+import { type Card, GamePhase, type GameState, type GameAction, type PhaseData, GameActionOptions } from "@/types/GameTypes"
 import type { Player } from "./Player"
 import { MusLogic } from "@/logic/MusLogic"
 
@@ -127,15 +127,15 @@ export class Game {
 
   private handleBettingAction(player: Player, action: GameAction): ActionResult {
     switch (action.type) {
-      case "paso":
+      case GameActionOptions.PASO:
         return this.handlePaso(player)
-      case "envido":
+      case GameActionOptions.ENVIDO:
         return this.handleEnvido(player, action.amount || 2)
-      case "ordago":
+      case GameActionOptions.ORDAGO:
         return this.handleOrdago(player)
-      case "acepto":
+      case GameActionOptions.ACEPTO:
         return this.resolvePhase(this.gameState.phaseData.phasePoints)
-      case "rechazo":
+      case GameActionOptions.RECHAZO:
         return this.handleRechazo(player)
       default:
         return { success: false, message: "Acción no válida" }

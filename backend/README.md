@@ -31,22 +31,17 @@ Backend completo para juego de Mus online multijugador desarrollado en TypeScrip
 │   └── constants.ts       # Configuración del juego
 ├── core/                  # Lógica principal
 │   ├── GameManager.ts     # Gestión de múltiples salas
-│   ├── Game.ts           # Lógica de partida individual
+│   ├── Game.ts           # Lógica de partida individual, Control de turnos, Flujo de fases, Sistema de puntuación, Procesamiento de acciones, Flujo automático
 │   ├── Player.ts         # Gestión de jugadores
 │   ├── DeckManager.ts    # Baraja y reparto de cartas
-│   ├── TurnManager.ts    # Control de turnos
-│   ├── PhaseManager.ts   # Flujo de fases
-│   └── ScoreManager.ts   # Sistema de puntuación
 ├── logic/                # Reglas del juego
 │   ├── MusLogic.ts       # Lógica pura del Mus
-│   └── ActionHandler.ts  # Procesamiento de acciones
 ├── sockets/              # WebSocket handling
 │   └── socketHandler.ts  # Eventos cliente↔servidor
 ├── utils/                # Utilidades
 │   ├── validators.ts     # Validación con Zod
 │   ├── logger.ts         # Sistema de logging
 │   ├── timeout.ts        # Gestión de timeouts
-│   ├── gameFlow.ts       # Flujo automático
 │   └── testUtils.ts      # Herramientas de testing
 └── types/
     └── GameTypes.ts      # Tipos TypeScript
