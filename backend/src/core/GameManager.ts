@@ -279,7 +279,7 @@ export class GameManager {
 
   // Broadcast a todos los clientes (placeholder)
   broadcastToAll(event: string, data: any): void {
-    logger.info(`Broadcasting ${event} to all clients:`, data)
+    logger.info(`Broadcasting ${event} to all clients: ${data}`)
     // Implementar cuando tengas WebSocket
   }
 

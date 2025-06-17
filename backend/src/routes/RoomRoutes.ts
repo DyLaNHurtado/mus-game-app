@@ -51,7 +51,7 @@ const router = Router();
     });
 
     // Unirse a una room existente (o crearla si no existe)
-/*     router.post("/:roomId/join", (req, res) => {
+   router.post("/:roomId/join", (req, res) => {
         try {
             const { roomId } = req.params;
             const { playerName, socketId } = req.body;
@@ -69,12 +69,12 @@ const router = Router();
             });
         } catch (error) {
             logger.error(`join room: ${error}`);
-            res.status(400).json({ error: error.message });
+            res.status(400).json({ error: error });
         }
-    }); */
+    }); 
 
     // Salir de una room
-/*         router.post("/:roomId/leave", (req, res) => {
+       router.post("/:roomId/leave", (req, res) => {
         try {
             const { roomId } = req.params;
             const { playerId } = req.body;
@@ -107,11 +107,11 @@ const router = Router();
             });
         } catch (error) {
             logger.error(`start game: ${error}`);
-            res.status(400).json({ error: error.message });
+            res.status(400).json({ error: error });
         }
         });
         
-        */
+        
 
 
 
